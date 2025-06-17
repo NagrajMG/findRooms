@@ -1,85 +1,125 @@
+// Load environment variables from .env in non-production environments
+if (process.env.NODE_ENV != "production") {
+    require("dotenv").config();
+}
+
+// Import core and third-party modules
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
-const ejsMate = require('ejs-mate'); 
-require('dotenv').config();
-const MONGO_URL = process.env.MONGODB_KEY;
-const PORT = process.env.PORT;
+const ejsMate = require("ejs-mate");
+const ExpressError = require("./utils/ExpressError.js");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const flash = require("connect-flash");
+
+// Import route handlers
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
+
+// MongoDB connection URI from environment
+const dbUrl = process.env.MONGODB_KEY;
+
+// Secret for session encryption
+const SECRET = process.env.SECRET;
+
+// Connect to MongoDB using Mongoose
 main()
   .then(() => {
-    console.log("connected to DB Atlas");
+    console.log("connected to DB");
   })
   .catch((err) => {
     console.log(err);
   });
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
+    await mongoose.connect(dbUrl);
 }
 
+// Set EJS as the templating engine and views directory
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+// Set EJS-Mate as the template engine to support layouts/partials
+app.engine("ejs", ejsMate);
+
+// Middleware to parse form data, support PUT/DELETE via method override, and serve static files
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine('ejs', ejsMate);                               // for creating navbar templates
-app.use(express.static(path.join(__dirname, "/public"))); // for public css files
+app.use(express.static(path.join(__dirname, "/public")));
 
-app.get("/", (req, res) => {
-  res.send("Hi, I am base site");
+// Configure MongoDB session store using connect-mongo
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        secret: SECRET,
+    },
+    touchAfter: 24 * 3600, // Prevents resaving unchanged session data more than once every 24 hrs
 });
 
-//Index Route
-app.get("/listings", async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("listings/index.ejs", { allListings });
+// Log error if session store setup fails
+store.on("error", () => {
+    console.log("ERROR in MONGO SESSION STORE", err);
 });
 
-//New Route
-app.get("/listings/new", (req, res) => {
-  res.render("listings/new.ejs");
+// Session configuration object
+const sessionOptions = {
+    store,
+    secret: SECRET,
+    resave: false,
+    saveUninitialized: true,
+};
+
+// Use session and flash middleware
+app.use(session(sessionOptions));
+app.use(flash());
+
+// Initialize Passport.js for authentication
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Middleware to make flash messages and current user available in all templates
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.currUser = req.user;    // Automatically set by passport
+    next();
 });
 
-//Show Route
-app.get("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/show.ejs", { listing });
+// Mount routers for listings, reviews, and user authentication
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
+app.get("/privacy", (req,res) => {
+    req.flash("error",`Under development stage! Please co-operate with us, Dear ${res.locals.currUser.username || "Guest"}:)`);
+    res.redirect("/listings");
+});
+app.get("/terms", (req, res) => {
+    req.flash("error",`Under development stage! Please co-operate with us, Dear ${res.locals.currUser.username || "Guest"}:)`);
+    res.redirect("/listings");
 });
 
-//Create Route
-app.post("/listings", async (req, res) => {
-  const newListing = new Listing(req.body.listing);
-  await newListing.save();
-  res.redirect("/listings");
+// Handle all undefined routes 
+app.all("*", (req, res, next) => {
+    next(new ExpressError(404, "Page not found!!"));
 });
 
-//Edit Route
-app.get("/listings/:id/edit", async (req, res) => {
-  let { id } = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/edit.ejs", { listing });
+// Centralized error handling middleware
+app.use((err, req, res, next) => {
+    let { statusCode = 500, message = "something went wrong" } = err;
+    res.status(statusCode).send(message);
 });
 
-//Update Route
-app.put("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-  res.redirect(`/listings/${id}`);
-});
-
-//Delete Route
-app.delete("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  let deletedListing = await Listing.findByIdAndDelete(id);
-  console.log(deletedListing);
-  res.redirect("/listings");
-});
-
-
-
-app.listen(PORT, () => {
-  console.log("server is listening to port",PORT);
+// Start the server
+app.listen(process.env.PORT, () => {
+    console.log(`server is listening to port ${process.env.PORT}`);
 });

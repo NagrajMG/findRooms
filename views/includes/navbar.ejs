@@ -1,15 +1,72 @@
+<style>
+  /* Style for the red circular search button */
+  .search-btn {
+    background-color: #fe424d;
+    color: #fff;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 1rem;
+  }
+
+  /* Maintain color on hover */
+  .search-btn:hover {
+    background-color: #fe424d;
+    color: #fff;
+  }
+
+  /* Icon inside the search button */
+  .search-btn i {
+    display: inline;
+    margin-right: 0.5rem;
+  }
+
+  /* Rounded search input field */
+  .search-inp {
+    border-radius: 25px;
+    padding: 0.5rem 3rem;
+    font-size: 1rem;
+  }
+</style>
+
+<!-- Bootstrap 5 responsive navbar -->
 <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><i class="fa-solid fa-house"></i></a> <!-- from font awesome -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    
+    <!-- Logo with compass icon linking to all listings -->
+    <a class="navbar-brand" href="/listings">
+      <i class="fa-regular fa-compass"></i>
+    </a>
+
+    <!-- Hamburger menu for smaller screens -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- Collapsible navbar section -->
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+      <!-- Left-aligned links -->
       <div class="navbar-nav">
-        <a class="nav-link active"  href="/">Home</a>
-        <a class="nav-link" href="/listings">All Listings</a>
-        <a class="nav-link" href="/listings/new">Add New Listing</a>
+        <a class="nav-link" href="/listings">Explore</a>
       </div>
+
+      <!-- Right-aligned links -->
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/listings/new">Rent Home</a>
+
+        <!-- Show Sign Up / Login for unauthenticated users -->
+        <% if (!currUser) { %>
+          <a class="nav-link" href="/signup"><b>Sign Up</b></a>
+          <a class="nav-link" href="/login"><b>Login</b></a>
+        
+        <!-- Show Logout for logged-in users -->
+        <% } else { %>
+          <a class="nav-link" href="/logout"><b>Logout</b></a>
+        <% } %>
+      </div>
+
     </div>
   </div>
 </nav>

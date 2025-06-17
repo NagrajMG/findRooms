@@ -1,29 +1,66 @@
-<% layout('layouts/boilerplate.ejs') -%>
-<body>
-    <h3>Edit your Listing</h3>
-    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT">
-      <input name="listing[title]" value="<%= listing.title %>" type="text" />
-      <br /><br />
-      <textarea name="listing[description]">
-<%= listing.description %></textarea
-      >
-      <br /><br />
-      <input name="listing[image]" value="<%= listing.image %>" type="text" />
-      <br /><br />
-      <input name="listing[price]" value="<%= listing.price %>" type="number" />
-      <br /><br />
-      <input
-        name="listing[country]"
-        value="<%= listing.country %>"
-        type="text"
-      />
-      <br /><br />
-      <input
-        name="listing[location]"
-        value="<%= listing.location %>"
-        type="text"
-      />
-      <br /><br />
-      <button>Edit</button>
-    </form>
-  </body>
+<% layout("/layouts/boilerplate") %> <!-- Extend base layout -->
+
+<div class="row mt-3">
+    <div class="col-8 offset-2">
+        <!-- Page heading -->
+        <h3 class="my-3">Edit Your Listing</h3>
+
+        <!-- Edit form -->
+        <!-- Uses method-override to convert POST into PUT -->
+        <!-- enctype is required to support file upload -->
+        <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+            
+            <!-- Title field -->
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input name="listing[title]" value="<%= listing.title %>" type="text" class="form-control" required>
+                <div class="valid-feedback">Title looks good!</div>
+            </div>
+
+            <!-- Description field -->
+            <div class="mb-3">
+                <label for="title" class="form-label">Description</label>
+                <textarea name="listing[description]" class="form-control" required><%= listing.description %></textarea>
+                <div class="invalid-feedback">Please enter a short description</div>
+            </div>
+            
+            <!-- Display current listing image -->
+            <div class="mb-3">
+                Original Listing Image <br>
+                <img src="<%= originalImageUrl %>">
+            </div>
+
+            <!-- New image upload field -->
+            <div class="mb-3">
+                <label for="image" class="form-label">Upload New Image</label>
+                <input name="listing[image]" type="file" class="form-control">
+            </div>
+
+            <div class="row">
+                <!-- Price input -->
+                <div class="mb-3 col-md-4">
+                    <label for="price" class="form-label">Price</label>
+                    <input name="listing[price]" value="<%= listing.price %>" type="number" class="form-control" required>
+                    <div class="invalid-feedback">Price should be valid</div>
+                </div>
+
+                <!-- Country input -->
+                <div class="mb-3 col-md-8">
+                    <label for="country" class="form-label">Country</label>
+                    <input name="listing[country]" value="<%= listing.country %>" type="text" class="form-control" required>
+                    <div class="invalid-feedback">Country name should be valid</div>
+                </div>
+            </div>
+
+            <!-- Location input -->
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input name="listing[location]" value="<%= listing.location %>" type="text" class="form-control" required>
+                <div class="invalid-feedback">Location should be valid</div>
+            </div>
+
+            <!-- Submit button -->
+            <button class="btn btn-dark edit-btn mt-3">Edit</button>
+        </form>
+    </div>
+</div>

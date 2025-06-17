@@ -1,0 +1,53 @@
+<% layout("/layouts/boilerplate") %> <!-- Extend base layout -->
+
+<div class="row mt-3">
+    <h1 class="col-6 offset-3 mb-3">Signup on findRooms.com</h1>
+
+    <div class="col-6 offset-3">
+        <!-- Signup form -->
+        <form action="/signup" method="POST" class="needs-validation" novalidate>
+
+            <!-- Username field -->
+            <div class="mb-3">  
+              <label for="username" class="form-label"><b>Username</b></label>
+              <input 
+                name="username"
+                id="username"
+                type="text"
+                class="form-control"
+                required
+              />
+              <div class="valid-feedback">looks good!!</div>
+            </div>
+
+            <!-- Email field -->
+            <div class="mb-3">  
+              <label for="email" class="form-label"><b>Email</b></label>
+              <input 
+                name="email"
+                id="email"
+                type="email"
+                class="form-control"
+                required
+              />
+              <div class="valid-feedback">looks good!!</div>
+            </div>
+
+            <!-- Password field -->
+            <div class="mb-3">  
+              <label for="password" class="form-label"><b>Password</b></label>
+              <input 
+                name="password"
+                id="password"
+                type="password"
+                class="form-control"
+                required
+              />
+              <div class="valid-feedback">password looks strong!!</div>
+            </div>
+
+            <!-- Submit button -->
+            <button class="btn btn-success">Signup</button>
+        </form>
+    </div>
+</div>
