@@ -100,11 +100,11 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 app.get("/privacy", (req,res) => {
-    req.flash("error",`Under development stage! Please co-operate with us, Dear ${res.locals.currUser.username || "Guest"}:)`);
+    req.flash("error",`Under development stage! Please co-operate with us, Dear Guest:)`);
     res.redirect("/listings");
 });
 app.get("/terms", (req, res) => {
-    req.flash("error",`Under development stage! Please co-operate with us, Dear ${res.locals.currUser.username || "Guest"}:)`);
+    req.flash("error",`Under development stage! Please co-operate with us, Dear Guest:)`);
     res.redirect("/listings");
 });
 app.get("/", (req,res) => {
