@@ -11,7 +11,7 @@ findRooms is a full-stack web application built with Node.js, Express, MongoDB, 
 - Flash messages for success/error feedback
 - Server-side and client-side form validation
 
-## 🧱 Tech Stack
+## Tech Stack
 
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB + Mongoose
@@ -21,7 +21,7 @@ findRooms is a full-stack web application built with Node.js, Express, MongoDB, 
 - **CSS**: Bootstrap 5, FontAwesome
 - **Others**: connect-flash, dotenv, method-override
 
-## 📂 Project Structure
+## Project Structure
 ```bash
 findRooms/
 │
@@ -37,7 +37,7 @@ findRooms/
 └── init/                    # Initial database setup
 ```
 
-## 🌐 Setup Instructions
+## Setup Instructions
 
 1. **Clone the repository**
 ```bash
