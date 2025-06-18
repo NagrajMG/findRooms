@@ -107,6 +107,9 @@ app.get("/terms", (req, res) => {
     req.flash("error",`Under development stage! Please co-operate with us, Dear ${res.locals.currUser.username || "Guest"}:)`);
     res.redirect("/listings");
 });
+app.get("/", (req,res) => {
+    res.redirect("/listings");
+});
 
 // Handle all undefined routes 
 // app.all("*", (req, res, next) => {
